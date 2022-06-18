@@ -1,0 +1,92 @@
+import numpy as np
+>>> import scipy.stats as st
+>>> x = np.loadtxt('x_aula.txt')
+>>> y = np.loadtxt('ym_aula.txt')
+>>> x.shape
+(20, 2)
+>>> ym.shape
+
+>>> y.shape
+(20,)
+>>> x1 = x[:,1].reshape(-1,1)
+>>> x2 = x[:,1].reshape(-1,1)
+>>> x1 = x[:,0].reshape(-1,1)
+>>> um = np.ones(20).reshape(-1,1)
+
+#yt4 = a0 + a1*x1 + a2*x2 + a3*x1*x2
+X4 = np.concatenate((um,x1,x2,x1*x2),axis=1)
+>>> X4t = np.transpose(X4)
+
+>>> a4 = np.linalg.inv(X4t@X4)@X4t@y
+
+>>> yt4 = X4@a4
+>>> e42 = np.sum((y-yt4)**2)
+>>> se2 = e42/(20-4)
+>>> aux = np.linalg.inv(X4t@X4)
+>>> sa2 = np.diag(aux)*se2
+>>> sa = np.sqrt(sa2)
+t = st.t.ppf(0.95,20-4)
+>>> ICi = a4-t*sa2
+>>> ICs = a4+t*sa2
+>>> 
+>>> 
+>>> np.transpose([ICi,ICs])
+array([[ 0.79081352,  0.82514195],
+       [ 1.59880294,  1.75138384],
+       [-0.24257775, -0.15031326],
+       [ 2.20280702,  2.51887425]])
+
+#yt = a0 + a1*x1 + a2*x2 + a3*x3 + a4*x1*x1
+
+>>> X5 = np.concatenate((X4,x1*x1),axis=1)
+>>> X5t = np.transpose(X5)
+>>> a5 = np.linalg.inv(X5t@X5)@X5t@y
+>>> yt5 = X5@a5
+>>> e52 = np.sum((ym-yt5)**2)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'ym' is not defined
+>>> e52 = np.sum((y-yt5)**2)
+>>> num =np.abs(e42-e52)/(5-4)
+>>> den = e52/(20-5)
+>>> F = num/den
+>>> Fc = st.f.ppf(0.90,5-4,20-5)
+
+X6 = np.concatenate((X5,x2*x2),axis=1)
+>>> X6t = np.transpose(X6)
+>>> a6 = np.linalg.inv(X6t@X6)@X6t@y
+>>> yt6 = X6@a6
+>>> e62 = np.sum((y-yt6)**2)
+>>> num = np.abs(e62-e52)/(6-5)
+>>> den = e62/(20-6)
+>>> F = num/den
+>>> Fc = st.f.ppf(0.9,6-5,20-6)
+
+
+#back
+# yt = a0 = a1*x1 + a2*x2 + a3*x1*x2 + a4*x1*x1 + a5*x2*x2 + a6*x1*x1*x2 + a7*x1*x2*x2
+
+ X = np.concatenate((um, x1, x2,x1*x2,x1*x1,x2*x2,x1*x1*x2,x1*x2*x2),axis=1)
+>>> Xt = np.transpose(X)
+>>> a = np.linalg.inv(Xt@X)@Xt@y
+>>> yt = Xt@a
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: matmul: Input operand 1 has a mismatch in its core dimension 0, with gufunc signature (n?,k),(k,m?)->(n?,m?) (size 8 is different from 20)
+>>> yt = X@a
+>>> e2 = np.sum((y-yt)**2)
+>>> se2 = e2/(20-8)
+>>> aux = np.linalg.inv(Xt@X)
+>>> sa2 = np.diag(aux)*se2
+>>> sa = np.sqrt(sa2)
+>>> t = st.t.ppf(0.95,20-8)
+>>> IC = [a-t*sa,a+t*sa]
+>>> np.transpose(IC)
+
+#X*a = ym
+U*D*V'*a = ym
+D*V'*a = U'*y
+V'*a = inv(D)*U'*y
+
+
+
